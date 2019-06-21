@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>员工信息添加界面</title>
+    <link rel="stylesheet" href="/static/layui/css/layui.css">
+    <link rel="icon" type="image/x-icon" href="/static/media/icon.ico" />
+</head>
+<body>
+    <div class="layui-container">
+        <blockquote class="layui-elem-quote">
+            <h1>添加员工</h1>
+        </blockquote>
+
+        <div class="layui-row">
+
+            <div class="layui-col-md5">
+                <form action="/addees/" method="post" enctype="multipart/form-data"/>
+
+                    <hr class="layui-bg-green">
+
+                    <input type="text" name="eName" id="eName" placeholder="员工姓名" class="layui-input"/>
+                    <hr class="layui-bg-green">
+
+                    <input type="text" name="eAge" id="eAge" placeholder="员工年龄" class="layui-input"/>
+                    <hr class="layui-bg-green">
+
+                    <input type="text" name="eGender" id="eGender" placeholder="员工性别" class="layui-input"/>
+                    <hr class="layui-bg-green">
+
+                    <select name="ePart" id="ePart" placeholder="部门" class="layui-input"/>
+                        <option value ="1">时间管理部门</option>
+                        <option value ="2">人力资源部门</option>
+                    </select>
+                    <hr class="layui-bg-green">
+
+                    <input type="file" name="ePhoto" id="ePhoto"/>
+                    <hr class="layui-bg-green">
+
+                    <input type="submit" value="添加" class="layui-btn"/>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

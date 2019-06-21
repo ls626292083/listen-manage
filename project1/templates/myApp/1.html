@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>js弹出窗</title>
+<link rel="stylesheet" href="/static/layui/css/layui.css">
+	<style>
+		a{
+			float: left;
+			margin-left:30px;
+			margin-top: 50px;
+		}
+		img{
+			width:400px;
+			border:black 1px solid;
+		}
+		#image{
+			position: absolute;
+			display: none;
+		}
+	</style>
+
+	<script>
+		//显示图片
+		function displayImg() {
+			var img = document.getElementById("image");
+
+			var x = event.clientX + document.body.scrollLeft + 20;
+			var y = event.clientY + document.body.scrollTop - 5;
+
+			img.style.left = x + "px";
+			img.style.top = y + "px";
+			img.style.display = "block";
+		}
+
+		//图片消失
+		function vanishImg(){
+			var img = document.getElementById("image");
+			img.style.display = "none";
+		}
+	</script>
+</head>
+
+<body>
+
+	<a href="" onmouseover="displayImg()" onmouseout="vanishImg()" onmousemove="displayImg()" >
+		鼠标移至这里显示图片
+	</a>
+
+	<a href="#" onmouseover="displayImg()" onmouseout="vanishImg()" onmousemove="displayImg()" >
+		鼠标移至这里显示图片
+	</a>
+
+	<a href="#" onmouseover="displayImg()" onmouseout="vanishImg()" onmousemove="displayImg()" >
+		鼠标移至这里显示图片
+	</a>
+
+	<a href="#" onmouseover="displayImg()" onmouseout="vanishImg()" onmousemove="displayImg()" >
+		鼠标移至这里显示图片
+	</a>
+
+
+	<!--动态显示的图片-->
+	<div id="image">
+		<img src="/static/media/1.png" alt=""><!--如果加上AJAX就可以根据不同的超链接来显示不同的图片了-->
+	</div>
+
+</body>
+</html>

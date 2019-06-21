@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>员工信息添加界面</title>
+    <link rel="stylesheet" href="/static/layui/css/layui.css">
+    <link rel="icon" type="image/x-icon" href="/static/media/icon.ico" />
+</head>
+<body>
+ <div class="layui-container">
+        <blockquote class="layui-elem-quote">
+            <h1>员工信息更新</h1>
+        </blockquote>
+
+        <div class="layui-row">
+        {%for ee in data%}
+            <div class="layui-col-md5">
+                <form action="/update/" method="post" enctype="multipart/form-data"/>
+
+                    <input type="text" name="eid" id="eid" placeholder="id" readonly unselectable="on"  class="layui-input" value="{{ ee.id}}" />
+                    <hr class="layui-bg-green">
+
+                    <input type="text" name="eName" id="eName" placeholder="员工姓名" class="layui-input" value="{{ ee.ename}}"/>
+                    <hr class="layui-bg-green">
+
+                    <input type="text" name="eAge" id="eAge" placeholder="员工年龄" class="layui-input" value="{{ ee.eage }}"/>
+                    <hr class="layui-bg-green">
+
+                    <input type="text" name="eGender" id="eGender" placeholder="性别" class="layui-input" value="{{ ee.egender }}"/>
+                    <hr class="layui-bg-green">
+
+                    <select name="ePart" id="ePart" placeholder="部门" class="layui-input" />
+                        <option value ="1">时间管理部门</option>
+                        <option value ="2">人力资源部门</option>
+                    </select>
+                    <hr class="layui-bg-green">
+
+                    <input type="file" name="ePhoto" id="ePhoto"/>
+                    <hr class="layui-bg-green">
+
+                    <img src="{{ ee.ephoto}}" height="50px">
+                    <hr class="layui-bg-green">
+                    <input type="submit" value="修改" class="layui-btn"/>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

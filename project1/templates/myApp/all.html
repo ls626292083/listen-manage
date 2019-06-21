@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>员工信息列表</title>
+    {% load staticfiles %}
+    <link rel="stylesheet" href="/static/layui/css/layui.css">
+    {#  设置网页标题图标  #}
+    <link rel="icon" type="image/x-icon" href="/static/media/icon.ico" />
+    <style>
+		img{
+			width:400px;
+			border:black 1px solid;
+		}
+		#image1{
+			position: absolute;
+			display: none;
+		}
+
+	</style>
+</head>
+<body>
+    <div class="layui-container">
+        <blockquote class="layui-elem-quote">
+            <h1>员工管理系统</h1>
+        </blockquote>
+        {# 查询学生模块 #}
+        <form action="/searche/" method="get">
+            <input placeholder="员工名" name="q" id="q">
+            <input type="submit" class="layui-btn" value="搜索">
+        </form>
+
+        {# 显示所有学生模块 #}
+        <table class="layui-table">
+      <colgroup>
+        <col width="150">
+        <col width="200">
+        <col>
+      </colgroup>
+      <thead>
+        <tr>
+            <th>id</th>
+            <th>姓名</th>
+            <th>年龄</th>
+            <th>性别</th>
+            <th>照片</th>
+            <th>部门</th>
+            <th>修改</th>
+            <th>删除</th>
+        </tr>
+      </thead>
+      <tbody>
+        {%for ee in ees%}
+            <tr>
+                <td>
+                     <a href="/get/{{ ee.id }}" >
+                         {{ee.id}}
+                    </a>
+                </td>
+                <td>
+                    	<a href="" onmouseover="displayImg({{forloop.counter}})" onmouseout="vanishImg({{forloop.counter}})" >
+	                        {{ ee.ename }}
+	                    </a>
+
+                        <div id="image{{forloop.counter}}" style="display: none;position: absolute;z-index:1" >
+		                    <img src="{{ ee.ephoto }}" alt=""><!--如果加上AJAX就可以根据不同的超链接来显示不同的图片了-->
+	                    </div>
+                </td>
+                <td>{{ee.eage}}</td>
+                <td>{{ee.egender}}</td>
+                <td>
+                    <img src="{{ ee.ephoto }}" height="80px">
+                </td>
+                <td>{{ee.epart}}</td>
+                <td>
+                    {# 修改学生模块 #}
+                    <a href="/get/{{ ee.id }}" class="layui-btn layui-btn-normal">
+                        <i class="layui-icon">&#xe642;</i>修改
+                    </a>
+                </td>
+                <td>
+                    {# 删除员工模块 #}
+                    <a href="/delete/{{ ee.id }}" class="layui-btn layui-btn-danger">
+                        <i class="layui-icon">&#xe640;</i>删除
+                    </a>
+                </td>
+            </tr>
+        {%endfor%}
+      </tbody>
+        </table>
+
+        {# 添加学生模块 #}
+        <a href="/add/" class="layui-btn layui-btn-warm">
+            <i class="layui-icon">&#xe654;</i> 添加
+        </a>
+
+        <a href="/educe/" class="layui-btn layui-btn-radius">
+            <i class="layui-icon">&#xe608;</i> 导出
+        </a>
+    </div>
+</body>
+</html>
+
+<script>
+//显示图片
+
+function displayImg(i) {
+        img = document.getElementById("image" + i);
+
+        //var x = event.clientX + document.body.scrollLeft - 300;
+        //var y = event.clientY + document.body.scrollTop - 120;
+        //img.style.left = x + "px";
+        //img.style.top = y + "px";
+        img.style.left = "px";
+        img.style.top = "px";
+        img.style.display = "block";
+}
+
+//图片消失
+function vanishImg(i){
+        img = document.getElementById("image" + i);
+        img.style.display = "none";
+}
+</script>
+
