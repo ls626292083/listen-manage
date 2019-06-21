@@ -1,0 +1,79 @@
+1. layui在pycharm中怎么用   ？？
+
+2.url(r'^hello$', view.hello),
+  载入模板，注意^hello$'。
+
+3.名为 mainbody 的 block 标签是可以被继承者们替换掉的部分。
+
+4.https://www.cnblogs.com/XiaoBoya/p/9212445.html  SQL配置
+
+5.django2.0版本以上外键创建格式：
+sgrade = models.ForeignKey("Grades",on_delete=models.CASCADE)
+
+6.配置模型
+  ①：python manage.py startapp myApp （创建项目）
+  ②：python manage.py makemigrations （生成迁移文件）
+  ③：python manage.py migrate        （执行迁移）
+
+7.①测试数据进入调试： python manage.py shell
+  
+  ②引入包：
+     from myApp.models import Grades,Students
+     from django.utils import timezone
+     from datetime import *
+  
+  ③创建对象：
+    grade1 = Grade()
+    grade1.gname = ""
+    ......
+    grade1.save()
+
+  ④
+    查看所有数据：Grades.object.all()   (类名.object.all（）)
+    查看某个对象: Grades.object.get(pk=2)  
+                 (类名.object.get（条件）)
+    修改：先复制，在save。
+    删除：1.对象.delect（）   （物理删除）
+
+  ⑤外键设置：
+ sgrade = models.ForeignKey("Grades",on_delete=models.CASCADE)
+    关联：stu.sgrade = grade1
+
+    获取关联对象的集合：（对象名.关联的类名小写_set.all() ）
+        grade1.students_set.all()   （查看一个班级的所有学生）
+
+    创建一个学生，属于指定班级：
+     stu2 = grade1.students_set.create(sname=u'曾            志伟',sgender=True,scontend=u'我叫 曾志伟',sage=45)
+
+8.启动服务器： python manage.py runserver ip:port
+               (ip可以不写，不写代表本机ip)
+              （端口号默认8000）
+              （python写的轻量级web服务器，仅在开发测试中使用）
+
+9.admin站点管理：
+  ①：内容发布：负责添加、修改、删除等。
+  ②：公告访问：
+  ③：配置Admin应用：django.contrib.admin （setting中 APPS）
+  ④：创建管理员用户：python manage.py createsuperuser
+      账号：wls  
+      密码：1234567890a
+      汉化：修改 setting.py末尾
+  ⑤：注册管理表：admin.site.register(Grades)   （admin.py）
+  ⑥：优化（admin.py的class）
+  ⑦：关联对象：需求在创建一个班级可以直接添加几个学生。
+  ⑧：布尔值显示问题：抓字段出来判断，并加以封装。
+            def gender(self):
+                    if self.sgender:
+                           return '男'
+                    else:
+                           return'女'
+            gender.short_description = '性别'
+  ⑨：执行动作的位置问题：
+  ⑩：利用装饰器进行注册：@@admin.register(类名)
+
+
+
+
+
+
+

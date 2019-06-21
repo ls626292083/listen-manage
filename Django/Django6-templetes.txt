@@ -1,0 +1,150 @@
+模板：
+     1.定义模板：
+		变量：视图传递给模板的数据，要遵守标识符规则
+		     语法：{{ xxxxx }}：引入一个简单的小参数
+		     注意：1.如果使用变量不存在，则插入空字符串
+		     在模板中使用点语法：字典查询->属性或方法->数字索引
+		     在模板中调用对象的方法：不能传递参数
+		
+		标签：  语法：{% tag %}
+		        作用：在输出中创建文本，控制逻辑和循环
+		        
+		1.	if:{% if 表达式1 %}
+			    语句1
+			   {% elif 表达式2 %}
+			    语句2
+			   {% else %}
+			    语句3
+			   {% endif%}
+		 	  
+			*eg:{% if num %}
+        		       <h1>你是个坏人</h1>
+    			     {% endif %}			
+			
+		2.	for:{% for 变量 in 列表 %}
+			     语句1
+			    {% empty %}
+			     语句2
+			    {% endfor %}
+
+			    {{forloop.counter}} :表示当前是第几次循环
+			*eg   
+				<ul>
+        			 {%for stu in students%}
+            			  <li>
+                        {{ forloop.counter}}--{{ stu.sname }}--{{ stu.sgrade }}
+                                  </li>
+        			 {% empty %}
+            		  	   <li>目前没有学生</li>
+        			 {% endfor %}
+   				</ul>
+
+		3.	comment:注释多行
+				{% comment %}
+				 注释内容
+				{% endcomment %}
+
+			
+		4.	ifequal、ifnotequal:判断是否相等或者不相等
+				{% ifequal 值1 值2 %}    值1=值2 执行
+				 语句
+				{% endifqual %}
+
+		5.	include:加载模板并以标签内的参数渲染
+				{% include ‘模板目录’参数1 参数2  %}
+
+		6.	url:反向解析
+				{% url 'namespace:name' p1 p2 %}
+
+		7.	csrf_token:用于跨站请求伪造保护
+				{% csrf_token %}
+
+		8.	block、extends:用于模板的继承
+
+		9.	autoescape:用于html转义
+
+		
+		过滤器：在变量被显示前，修改它
+			{{var|过滤器}}
+			upper：大写
+			lower：小写
+			
+			过滤器可以传递参数，参数用引号引起来：
+			join:列表|jion:'#'
+			
+			如果一个变量没有被提供，或者值为false、空，可以使用默认值
+			default： {{ var|default：‘good’ }}
+
+			date:根据给定格式转换日期为字符串
+				{{var|date:'y-m-d'}}
+
+			excape:HTML转义
+
+			加减乘除：{{num|add:10}}  num={%withradtio num 1 5%}
+		
+		注释：单行注释：{# #}
+
+	2.模板继承：可以减少页面内容的重复定义
+			block：在父模板中预留区域，子模板去填充
+			extend:继承模板，需要写在模板文件的第一行
+
+	3.HTML转义：{{ code | safe}}
+	
+	4.CSRF：跨站请求伪造：某些恶意的网站包含链接、表单、按钮、利用登入用户在浏览器中认证，从而攻击服务
+
+	5.验证码：在用户注册登陆页面时候使用，为了防止暴力请求，减轻服务器压力	
+		  防止CSRF的一种方式
+
+
+def verifycode(request):
+    #引入绘图模块
+    from PIL import Image,ImageDraw,ImageFont
+    #引入随机函数模块
+    import random
+    #定义变量，用于画图的背景色、宽、高
+    bgcolor = (random.randrange(20,100),random.randrange(20,100),random.randrange(20,100))
+    width = 100
+    height = 50
+    #创建画面对象
+    im = Image.new('RGB',(width,height),bgcolor)
+    #创建画笔对象
+    draw = ImageDraw.Draw(im)
+    #调用画笔的point()函数绘制噪点
+    for i in range(0,100):
+        xy = (random.randrange(0,width),random.randrange(0,height))
+        fill = (random.randrange(0,255),255,random.randrange(0,255))
+        draw.point(xy,fill = fill)
+    #定义验证码的备选项
+    str = '1234567890QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm'
+    #随机选取4个值作为验证码
+    rand_str = ''
+    for i in range(0,4):
+        rand_str += str[random.randrange(0,len(str))]
+    #构造字体对象
+    #font = ImageFont.load_default().font
+    #font = ImageFont.truetype(r'C:\Windows\Fonts\AdobeArabic-Bold.otf',40)
+    font = ImageFont.truetype(r'C:\Windows\Fonts\consolaz.ttf',40)
+    #构造字体颜色
+    fontcolor1 = (255, random.randrange(0,255),  random.randrange(0,255))
+    fontcolor2 = (255, random.randrange(0, 255), random.randrange(0, 255))
+    fontcolor3 = (255, random.randrange(0, 255), random.randrange(0, 255))
+    fontcolor4 = (255, random.randrange(0, 255), random.randrange(0, 255))
+    #绘制4个字
+    draw.text((5,2),  rand_str[0], font=font,fill=fontcolor1)
+    draw.text((25, 2), rand_str[1], font=font, fill=fontcolor2)
+    draw.text((50, 2), rand_str[2], font=font, fill=fontcolor3)
+    draw.text((75, 2), rand_str[3], font=font, fill=fontcolor4)
+    #释放画笔
+    del draw
+    #存入session,用于做进一步的验证
+    #request.session['verifycode'] = rand_str
+    #内存文件操作
+    import io
+    buf = io.BytesIO()
+    #将图片保存在内存中，文件类型为png
+    im.save(buf,'png')
+    #将内存中的图片数据返回给客户端，MIME类型为图片png
+    return HttpResponse(buf.getvalue(),'image/png')
+    #return HttpResponse('111')
+
+

@@ -1,0 +1,181 @@
+1.django对各种数据库都提供了很好的支持，django为这些数据库调用了同一的Api
+  可以根据不同的义务需求，使用不同的数据库。（配置数据库）
+
+2.开发流程：
+  ①配置数据库：
+  ②定义模型类：一个模型都在数据库中对应一张数据表
+  ③生成迁移文件：
+  ④执行迁移文件：
+  ⑤使用模型类进行增删改查（crud）：
+
+3.ORM：对象-关系-映射
+  ①任务：
+         i  根据对象的类型生成表结构
+         ii 将对象、列表的操作转换为sql语句
+         iii将sql语句查询到的结果转换为对象、列表
+
+4.定义模型：
+  ①模型、属性、表、字段间的关系：一个模型类在数据库中对应一张表。在模型类中定义的属性，对应该模型对照表的一个字段。
+  ②定义属性： 
+     i：属性命名限制：
+		遵循标识符规则
+		由于gjango的查询方式，不允许使用连续的下划线	
+     ii:定义属性时，需要字段类型，字段类型被定义在django.db.models,
+        使用时导入 from django.db import models
+     iii：逻辑删除：对于重要数据都要做逻辑删除，不做物理删除，实现方法是定义
+ 	  isDelete属性，类型为BooleanField,默认值为False
+  ③字段选项：小括号里面的，通过字段选项对字段进行约束
+     -null
+          如果为True，Django将以空值为Null存储到数据库中，默认值是False
+     -blank
+          如果为True,则该字段允许空白，默认值为False
+     .db_column
+          字段的名称，如果未指定，则使用属性的名称
+     .db_index
+           若值为True，则在表中会为此字段创建索引
+     .default
+           默认值
+     .primary_key
+ 	   若为True,则该字段会成为模型的主要字段
+     .unique
+	   如果为True,这个字段在表中必须有唯一值
+  ④关系:
+	i:分类
+		ForeignKey:一对多，将字段定义在多的端中
+		ManyToManyField:多对多，将字段定义在两端中
+		OneToOneField:一对一，将字段定义在任意一端中
+        ii:访问
+		一对多访问：
+			格式：对象.模型类小写_set
+		一对一访问：
+			格式：对象.模型类小写
+		ID访问：
+			格式：对象.模型类小写_id
+
+5.创建模型类：
+
+6.元选项：在模型类中定义Meta类，用于设置元信息
+         class Meta:
+        	db_table = ''  #定义数据表明，推荐使用小写字母，数据表明默认为（项目名小写_类名小写)
+        	ordering =[]   #对象的默认排序字段，获取对象列表时使用（增加开销）
+
+7.模型成员：
+  ①类属性：i.objects是Manager类型的一个对象，作用是于数据库进行交互，当定义模型类时没有指定管理器，则Python为模型创建一个名为objects的管理器。
+  ②自定义模型管理器,自定义后objects就不存在了：stuObj = models.Manager()
+  ③自定义管理器Manager类：模型管理器是Django的模型与数据库进行交互的接口，一个模型可以有多个模型管理器。
+     作用：向管理器类中添加额外的方法，修改管理器返回的原始查询集。
+           重写get_queryset()方法。
+  ④创建对象：为了向数据库中添加数据。
+              当创建对象时，django不会对数据库进行读写操作，当调用save()方式时才与数据库进行交互，将对象存到数据库中。
+    i:注意：__init__方法已经在父类models.Model中使用，在自定义的模型中无法使用
+    
+    ii:方法
+         1.在模型类中增加一个类方法：
+  @classmethod
+  def createStudent(cls,name,age,gender,contend,grade,lastT,createT,isD=False):
+        	stu = cls(sname = name,sage = age,sgender = gender,scontend = contend,sgrade = grade,lastTime = lastT,createTime = createT,isDelete = isD)
+       		return stu
+		
+
+         2.在定义管理器中添加一个方法：
+class StudentManager(models.Manager):
+    def get_queryset(self):
+        return super(StudentManager, self).get_queryset().filter(isDelete = False)
+    def createStudent (self,name,age,gender,contend,grade,lastT,createT,isD=False):
+        stu = self.model()
+        stu.sname = name
+        stu.sage = age
+        stu.sgender = gender
+        stu.scontend = contend
+        stu.sgrade = gender
+        stu.sgrade = grade
+        stu.lastTime = lastT
+        stu.createTime = createT
+        return stu
+
+8.模型查询：
+	查询集：表示从数据库中获取的对象集合
+	查询集可以有多个过滤器
+ 	过滤器就是一个函数，基于所给的参数限制查询集结果
+        重sql角度来说，查询集合与select语句等价，过滤器就像where条件
+  ①查询集：
+         1.在管理器上调用过滤器方法返回查询集
+         2.查询集经过过滤器后返回新的查询集，可以写成链式调用（多过滤）
+	 3.惰性执行：创建查询集不会带来任何数据库的访问，直到调用数据时，才会访问数据库（为了提高性能 ）
+	 4.直接访问数据的情况：①迭代②序列化③与if合用
+	 5.返回查询集的方法称为过滤器
+            ①all（）：返回查询集中的所有数据
+            ②filter()：1.filter（键=值，键=值,..） 2.filter（键=值）.filter（键=值）
+	    ③exclude():与filter相反，过滤符合条件的数据
+            ④order_by（）：排序
+	    ⑤value（）：一条数据就是一个对象（字典），返回一个列表
+	 
+	 6.返回单个数据：
+	    ①get():返回一个满足条件的对象，1.如果没有符合条件的对象，会引发模型类DoesNoExit异常。2.如果找到多个对象，也会引发模型类MultipleObjectReturnedy异常。
+	    ②count（）：返回查询集的个数
+	    ③first（）：返回查询集的第一个对象
+	    ④last（） ：返回查询集的最后一个对象
+	    ④exists（）：判断查询集中是否有数据
+	  7.限制查询集：查询集返回列表，可以使用下标方法进行限制，等同于sql中的limit语句（下标不能用负数）
+	    studentsList = Students.stuobj2.all()[0:1]
+
+	    def stupage(request,page):
+    	     #0-1 1-2 2-3
+             #1 2 3
+             #page*1
+    		page1 = int(page)
+    		studentsList = Students.stuobj2.all()[(page1-1)*1:page1*1]
+    		return render(request,'myApp/students.html',{'students':studentsList})
+		
+	   8.查询集的缓存：每个查询集都包含一个缓存，来最小化的对数据库访问，在新建的查询集中，缓存首次为空，第一次对查询集求值，会发生数据缓存，django会将查询出来的数据做一个缓存，并返回查询结，以后的查询直接使用查询好的缓存。
+	  *9.字段查询：实现sql中的where语句，作为方法filter()、exclude()、get()的参数
+	         语法：属性名称_ _比较运算符 = 值
+	         外键：属性名称_id
+		 转义：like语句中使用%是为了匹配站位，匹配数据中的%
+		      （where like \%）
+			filter(sname_contains = '%')
+			
+	       比较运算符：
+			1.exact:判断，大小写敏感
+                                类似于filter(isDelete=False)
+			2.contains:是否包含，大小写敏感
+		studentsList = Students.stuobj2.filter(sname__contains='胜')
+			3.startwith、endwith:以value开头或结尾，大小写敏感
+		studentsList = Students.stuobj2.filter(sname_ _startswith='立')
+		studentsList = Students.stuobj2.filter(sname_ _endswith='胜')
+                     *以上是在前面加i,表示不区分大小写iexact、icontainsd......
+			
+			4.isnull、isnotnull:是否为空
+			  filter(sname_isnull=False)  (名字是否为空)
+			5.in : 是否包含在范围内
+			studentsList = Students.stuobj2.filter(pk__in = {2,4,6}
+			6.gt:大于 gte:大学等于 lt:小于 lte：小于等于
+			studentsList = Students.stuobj2.filter(sage__gte = 20)
+			7.year、month、week、hour、minute、second
+		    studentsList = Students.stuobj2.filter(lastTime__year=2017)
+			8.跨关联查询：处理join查询
+					语法：模型类名_ _属性名_ _比较运算符
+			9.查询快捷：pk-代表主键
+
+			10.聚合函数：使用aggregate（）函数返回聚合函数的值
+				Avg:平均值
+				Count:计数
+				Max:最大值
+				Min:最小值
+				Sum:求和
+			from django.db.models import Max
+			maxAge = Students.stuobj2.aggregate(Max('sage'))
+			11.F对象：可以使用模型的A属性与B属性进行比较
+		     from django.db.models import F
+		     def grades(requenst):
+    			g = Grades.objects.filter(ggirlnum__lt=F('gboynum'))
+   			print(g)
+    			return HttpResponse('**********')
+                          
+			支持F对象的算术运算：
+			g = Grades.objects.filter(ggirlnum__gt=F('gboynum')-40)
+			
+			11.Q对象：过滤器方法中的关键字方法参数，条件为And模式
+			     需求：进行or查询（使用Q对象）
+	studentsList = Students.stuobj2.filter(Q(pk__lte=3) | Q(sage__lt=30))
+        studentsList = Students.stuobj2.filter(~Q(pk__lte=3))  （取反）

@@ -1,0 +1,56 @@
+1.视图的使用：
+  ①：定义视图：from django.http import HttpResponse
+		def index(request):
+    		   return HttpResponse("wls is good boy！")
+  ②：定义url：修改urls.py文件
+               url(r'^',include('myApp.urls'))
+  ③：在myApp下创建urls.py文件
+		from django.conf.urls import url
+		from . import views  #引入当前目录下的views.py
+		urlpatterns = [
+  			url(r'^$',views.index)
+		]
+
+2.模板的使用:
+  ①：模板是HTML页面，可以根据视图中传递过来的数据进行填充
+  ②：创建模板：创建templates目录，在目录下创建对应项目的模板目录
+      （project/templates/myApp）
+  ③：配置项目模板路径：修改setting.py文件（TEMPLATES模块）
+  ④：自定义grades.html和students.html模板
+      {{输出值，可以是变量，可以是对象属性}}
+      {%执行代码段%}
+
+      eg:http://127.0.0.1:8000/grades
+         i  ：写grades.html模板
+         ii ：定义视图
+         iii：配url，根据匹配调用视图
+         iv ：视图中有去模型去数据的方法，渲染数据，将渲染好的数据给web
+
+3.在原数据库的基础上加入新表，只需要在model中添加，然后生成迁移文件并执行就好了。
+
+4.流程梳理：
+  ①创建工程：django-admin startproject project
+  ②创建项目：python manage.py startapp myApp
+  ③激活项目：修改setting.py中的INSTALLED_APPS 在末尾加上项目名
+  ④配置数据库：修改setting.py中的DATABASES
+		DATABASES = {
+    			'default': {
+        			'NAME': 'listen1',
+        			'ENGINE': 'sql_server.pyodbc',
+        			'HOST': '127.0.0.1',
+        			'PORT': '1433',
+        			'USER': 'sa',
+        			'PASSWORD': 'sa',
+        			'OPTIONS': {
+          			  'driver' : 'SQL Server Native Client 11.0',
+        			}
+    			}
+			}
+  ⑤创建模型类：在项目目录下的models.py中
+  ⑥生成迁移文件：执行python manage.py makemigrations
+  ⑦执行迁移文件：执行python manage.py migrate
+  ⑧配置站点：
+  ⑨创建模板目录/项目模板目录：
+  ⑩在setting.py创建模板路径：'DIRS': [BASE_DIR+'/templates', ],
+  11在工程下修改urls.py:
+  12在项目目录下创建urls.py:
